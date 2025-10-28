@@ -8,12 +8,19 @@
 import SwiftUI
 
 struct EditSheet: View {
-    // TODO: Add title binding
+    
+    @Binding var title: String
     @Binding var selectedColor: Color
     
     var body: some View {
         VStack(spacing: 20) {
-                // TODO: Add list.bullet.circle.fill icon and TextField
+                
+            HStack {
+                Image(systemName: "list.bullet.circle.fill")
+                    // style
+                TextField("New Reminder", text: $title)
+                    // style
+            }
             
             ColorChooser(selectedColor: $selectedColor)
             
@@ -25,8 +32,8 @@ struct EditSheet: View {
 }
 
 #Preview {
-    @Previewable @State private var selectedColor: Color = .red
-    
-    EditSheet(selectedColor: $selectedColor)
-        .preferredColorScheme(.dark)
+    @Previewable @State var selectedColor: Color = .red
+    @Previewable @State var title: String = "Edit"
+    EditSheet(title: $title, selectedColor: $selectedColor)
+        .preferredColorScheme(.light)
 }

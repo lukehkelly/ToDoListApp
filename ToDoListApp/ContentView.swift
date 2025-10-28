@@ -8,18 +8,31 @@
 import SwiftUI
 
 struct ContentView: View {
+    
     @State private var isEditing: Bool = false
-    // TODO: Add an @State property to hold a RemindersPage struct
-    @State private var page: RemindersPage = RemindersPage( /* fill in */)
+    @State private var page: RemindersPage = RemindersPage(id: UUID(), title: "My Reminders", items: [], color: .mint)
     
     var body: some View {
         VStack {
-            // TODO: Add header view
+            
+            HStack {
+                Text(page.title)
+                    // change style
+                Spacer()
+                Button(action : {
+                    isEditing.toggle( )
+                }) {
+                    Text(isEditing ? "Done" : "Edit")
+                        // change style
+                }
+                // pad
+            }
             
             List {
-                // TODO: Loop through the page's reminders using ForEach
-                ForEach(/* reminders */) { $reminder in
-                    // TODO: Display each reminder row
+                ForEach($page.items) { $reminder in
+                    Toggle(isOn: $reminder.isCompleted) {
+                        Text(reminder.title)
+                    }
                 }
                 .onDelete { indexSet in
                     page.items.remove(atOffsets: indexSet)
@@ -27,12 +40,29 @@ struct ContentView: View {
             }
             .listStyle(.plain)
             
-            // TODO: Add footer view
-
+            HStack {
+                Button(action: {
+                    let newReminder: Reminder = Reminder(id: UUID(), title: "New Reminder", isCompleted: false)
+                    page.items.append(newReminder)
+                }) {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            // style
+                        Text("New Reminder")
+                            // style
+                    }
+                }
+                Spacer()
+            }
+            // pad
         }
         .sheet(isPresented: $isEditing) {
-            // TODO: Add remaining binding
-            EditSheet(selectedColor: /* page color */)
+            
+            EditSheet(title: $page.title, selectedColor: $page.color)
         }
     }
+}
+
+#Preview {
+    ContentView()
 }
