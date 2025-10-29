@@ -17,9 +17,13 @@ struct EditSheet: View {
                 
             HStack {
                 Image(systemName: "list.bullet.circle.fill")
-                    // style
-                TextField("New Reminder", text: $title)
-                    // style
+                    .font(.system(size: 35))
+                    
+                TextField("Title", text: $title)
+                    .font(.system(size: 35))
+                    .padding(8)
+                    .background(.gray.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
             }
             
             ColorChooser(selectedColor: $selectedColor)

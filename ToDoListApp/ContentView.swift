@@ -8,30 +8,58 @@
 import SwiftUI
 
 struct ContentView: View {
-    
+    @State private var currEditingReminderID: UUID? = nil
     @State private var isEditing: Bool = false
-    @State private var page: RemindersPage = RemindersPage(id: UUID(), title: "My Reminders", items: [], color: .mint)
+    @State private var page: RemindersPage = RemindersPage(id: UUID(), title: "My Reminders", items: [], color: .red)
     
     var body: some View {
         VStack {
             
             HStack {
                 Text(page.title)
-                    // change style
+                    .padding(.leading)
+                    .padding(.bottom)
+                    .padding(.top)
+                    .font(.system(size: 30))
+                    .fontWeight(.bold)
+                    .foregroundStyle(page.color)
                 Spacer()
                 Button(action : {
                     isEditing.toggle( )
                 }) {
-                    Text(isEditing ? "Done" : "Edit")
-                        // change style
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 25))
+                        .padding(.trailing)
                 }
                 // pad
             }
             
             List {
                 ForEach($page.items) { $reminder in
-                    Toggle(isOn: $reminder.isCompleted) {
-                        Text(reminder.title)
+                    if currEditingReminderID == reminder.id {
+                        TextField("New Reminder", text: $reminder.title, onCommit: {currEditingReminderID = nil})
+                            .font(.system(size: 20))
+                    }
+                    else {
+                        HStack {
+                            Button(action: {
+                                withAnimation(.easeIn(duration: 0.15)) {
+                                    reminder.isCompleted.toggle()
+                                }
+                            }) {
+                                Image(systemName: reminder.isCompleted ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(reminder.isCompleted ? page.color : .gray)
+                                    .font(.system(size: 30))
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Text(reminder.title)
+                                .strikethrough(reminder.isCompleted)
+                                .foregroundColor(reminder.isCompleted ? .gray : page.color)
+                                .font(.system(size: 20))
+                
+                            Spacer()
+                        }
                     }
                 }
                 .onDelete { indexSet in
@@ -42,19 +70,22 @@ struct ContentView: View {
             
             HStack {
                 Button(action: {
-                    let newReminder: Reminder = Reminder(id: UUID(), title: "New Reminder", isCompleted: false)
-                    page.items.append(newReminder)
+                    withAnimation(.easeIn(duration: 0.15)) {
+                        let newReminder: Reminder = Reminder(id: UUID(), title: "", isCompleted: false)
+                        page.items.append(newReminder)
+                        currEditingReminderID = newReminder.id
+                    }
                 }) {
                     HStack {
-                        Image(systemName: "plus.circle.fill")
-                            // style
-                        Text("New Reminder")
-                            // style
+                        Spacer()
+                        Image(systemName: "plus.circle.fill")                            .padding(.trailing)
+                            .foregroundStyle(page.color)
+                            .font(.system(size: 50))
                     }
                 }
                 Spacer()
             }
-            // pad
+
         }
         .sheet(isPresented: $isEditing) {
             
